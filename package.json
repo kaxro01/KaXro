@@ -4,10 +4,9 @@
   "description": "KaXro Discord Bot",
   "type": "module",
   "main": "index.js",
-"scripts": {
-  "start": "node index.js",
-  "dev": "node --watch index.js"
-}
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
   },
   "engines": {
     "node": ">=20.10.0"
@@ -17,7 +16,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "axios": "^1.15.2",
-    "pg": "^8.11.3",
+    "pg": "^8.11.0",
     "node-cron": "^4.2.1",
     "winston": "^3.19.0",
     "winston-daily-rotate-file": "^5.0.0",
