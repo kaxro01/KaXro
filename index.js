@@ -19,6 +19,7 @@ import path from 'node:path';
 import embedBuilder from './embedBuilder.js';
 import say from './Say.js';
 import voiceVerification from './voiceVerification.js';
+import { musicCommands, setupMusic } from './src/music/music.js';
 
 const token = process.env.DISCORD_TOKEN;
 const clientId = process.env.CLIENT_ID;
@@ -273,6 +274,7 @@ const commands = [
     spinWheelCommand,
     addSpinsCommand,
     removeSpinsCommand,
+    ...musicCommands,
 ];
 
 for (const command of commands) {
@@ -318,6 +320,11 @@ client.once('ready', async () => {
     console.log(`✅ KaXro is online as ${client.user.tag}`);
 
     try {
+        setupMusic(client);
+        if (client.riffy) {
+            client.riffy.init(client.user.id);
+        }
+
         await voiceVerification.execute(client);
     } catch (error) {
         console.error('❌ Voice verification failed:', error);
@@ -439,6 +446,21 @@ client.on('interactionCreate', async interaction => {
 
     if (!command) {
         return;
+    }
+
+    const musicCommandNames = new Set([
+        'play', 'playnow', 'pause', 'resume', 'skip', 'stop',
+        'queue', 'nowplaying', 'volume', 'loop',
+    ]);
+
+    if (musicCommandNames.has(interaction.commandName)) {
+        const MUSIC_ROLE_ID = '1552646358601695312';
+        if (!interaction.member?.roles?.cache?.has(MUSIC_ROLE_ID)) {
+            return interaction.reply({
+                content: 'You need the required Music role to use music commands.',
+                ephemeral: true,
+            });
+        }
     }
 
     try {
