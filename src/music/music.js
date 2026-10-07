@@ -321,23 +321,24 @@ export const musicCommands = [
 ];
 
 export function setupMusic(client) {
-    const host = process.env.LAVALINK_HOST;
-    const password = process.env.LAVALINK_PASSWORD;
-    const port = Number(process.env.LAVALINK_PORT || 2333);
-    const secure = String(process.env.LAVALINK_SECURE || 'false').toLowerCase() === 'true';
-
-    if (!host || !password) {
-        console.warn('⚠️ Music system disabled: LAVALINK_HOST or LAVALINK_PASSWORD is missing.');
-        return false;
-    }
+    // KaXro music uses this known-working public Lavalink v4 endpoint.
+    // These values are intentionally fixed here so an old Bot-Hosting Env
+    // entry (for example the timed-out Mumbai :2333 endpoint) cannot override
+    // the music node configuration.
+    const host = 'sg.lavalink.heavencloud.in';
+    const password = 'heavencloud';
+    const port = 443;
+    const secure = true;
 
     const nodes = [{
-        name: process.env.LAVALINK_NAME || 'KaXro-Lavalink',
+        name: 'KaXro-Lavalink-SG',
         host,
         password,
         port,
         secure,
     }];
+
+    console.log(`🎵 Lavalink configured: ${host}:${port} (SSL: ${secure})`);
 
     client.riffy = new Riffy(client, nodes, {
         send: payload => {
