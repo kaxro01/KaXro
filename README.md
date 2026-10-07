@@ -15,3 +15,8 @@ Commands:
 - `/loop mode` — off, track, or queue
 
 A Lavalink v4 node is required. Put its host, port, password, and secure setting in the environment variables shown in `.env.example`. Riffy supports Lavalink v3/v4 and uses the Discord voice gateway updates to connect the player to the user's VC.
+
+
+## Music System
+
+The music system is configured in the bot code to use the HeavenCloud Singapore Lavalink v4 node (`sg.lavalink.heavencloud.in:443` with SSL).
