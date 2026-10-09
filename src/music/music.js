@@ -321,17 +321,19 @@ export const musicCommands = [
 ];
 
 export function setupMusic(client) {
-    // KaXro music uses this known-working public Lavalink v4 endpoint.
-    // These values are intentionally fixed here so an old Bot-Hosting Env
-    // entry (for example the timed-out Mumbai :2333 endpoint) cannot override
-    // the music node configuration.
-    const host = 'sg.lavalink.heavencloud.in';
-    const password = 'heavencloud';
-    const port = 443;
-    const secure = true;
+    // HeavenCloud's currently published free public Lavalink node (v3/v4).
+    // The KAXRO_LAVALINK_* names intentionally avoid stale LAVALINK_* values
+    // that may still be saved in the hosting panel.
+    const host = process.env.KAXRO_LAVALINK_HOST?.trim() || 'free-lava.heavencloud.in';
+    const password = process.env.KAXRO_LAVALINK_PASSWORD || 'heavencloud.in';
+    const rawPort = Number(process.env.KAXRO_LAVALINK_PORT || 4000);
+    const port = Number.isInteger(rawPort) && rawPort > 0 && rawPort <= 65535 ? rawPort : 4000;
+    const secureValue = process.env.KAXRO_LAVALINK_SECURE?.trim().toLowerCase();
+    const secure = secureValue ? ['1', 'true', 'yes', 'on'].includes(secureValue) : false;
+    const nodeName = process.env.KAXRO_LAVALINK_NAME?.trim() || 'KaXro-Lavalink-Public';
 
     const nodes = [{
-        name: 'KaXro-Lavalink-SG',
+        name: nodeName,
         host,
         password,
         port,
