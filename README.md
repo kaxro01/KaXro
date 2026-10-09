@@ -14,9 +14,9 @@ Commands:
 - `/volume amount` — set/view volume
 - `/loop mode` — off, track, or queue
 
-A Lavalink v4 node is required. Put its host, port, password, and secure setting in the environment variables shown in `.env.example`. Riffy supports Lavalink v3/v4 and uses the Discord voice gateway updates to connect the player to the user's VC.
+A Lavalink v4 node is required for music. The default uses HeavenCloud's currently published public test node; configure it with `KAXRO_LAVALINK_HOST`, `KAXRO_LAVALINK_PORT`, `KAXRO_LAVALINK_PASSWORD`, and `KAXRO_LAVALINK_SECURE` in `.env` or the hosting panel. Public nodes are best for testing/light traffic.
 
 
 ## Music System
 
-The music system is configured in the bot code to use the HeavenCloud Singapore Lavalink v4 node (`sg.lavalink.heavencloud.in:443` with SSL).
+Discord login is independent of slash-command registration, voice verification, and Lavalink connectivity. If command registration fails, check that `CLIENT_ID` matches the bot token and `GUILD_ID` is a server KaXro has joined. Voice verification is disabled unless `VERIFICATION_VOICE_CHANNEL_ID` and `VERIFICATION_MEMBER_ROLE_ID` are set to accessible IDs.

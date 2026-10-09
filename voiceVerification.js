@@ -12,8 +12,8 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const VOICE_CHANNEL_ID = '1549522340323393636';
-const MEMBER_ROLE_ID = '1536690103311929406';
+const VOICE_CHANNEL_ID = process.env.VERIFICATION_VOICE_CHANNEL_ID?.trim();
+const MEMBER_ROLE_ID = process.env.VERIFICATION_MEMBER_ROLE_ID?.trim();
 
 const AUDIO_FILE = path.join(
     __dirname,
@@ -25,6 +25,11 @@ export default {
     once: true,
 
     async execute(client) {
+        if (!VOICE_CHANNEL_ID || !MEMBER_ROLE_ID) {
+            console.log('ℹ️ Voice verification is disabled. Set VERIFICATION_VOICE_CHANNEL_ID and VERIFICATION_MEMBER_ROLE_ID to enable it.');
+            return;
+        }
+
         try {
             const channel = await client.channels.fetch(
                 VOICE_CHANNEL_ID,

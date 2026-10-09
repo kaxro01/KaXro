@@ -31,8 +31,7 @@ if (!token) {
 }
 
 if (!clientId) {
-    console.error('❌ Missing CLIENT_ID');
-    process.exit(1);
+    console.warn('⚠️ CLIENT_ID is missing. KaXro can log in, but slash commands cannot be registered until CLIENT_ID is set.');
 }
 
 /* =========================
@@ -316,18 +315,48 @@ async function registerCommands() {
     }
 }
 
+async function registerCommandsSafely() {
+    if (!clientId) {
+        console.error('❌ Slash-command registration skipped: set CLIENT_ID to the Application ID from the same bot as DISCORD_TOKEN.');
+        return;
+    }
+
+    if (client.user.id !== clientId) {
+        console.error(`❌ Slash-command registration skipped: CLIENT_ID does not match the logged-in bot (logged-in bot ID: ${client.user.id}).`);
+        return;
+    }
+
+    if (guildId && !client.guilds.cache.has(guildId)) {
+        console.error(`❌ Slash-command registration skipped: KaXro cannot see GUILD_ID ${guildId}. Check the server ID and invite this bot to that server.`);
+        return;
+    }
+
+    try {
+        await registerCommands();
+    } catch (error) {
+        console.error('❌ Slash-command registration failed; KaXro will remain online. Check CLIENT_ID, GUILD_ID, bot membership, and the applications.commands invite scope.', error);
+    }
+}
+
 client.once('ready', async () => {
     console.log(`✅ KaXro is online as ${client.user.tag}`);
+
+    // Slash-command errors must not prevent the Discord bot from staying online.
+    await registerCommandsSafely();
 
     try {
         setupMusic(client);
         if (client.riffy) {
             client.riffy.init(client.user.id);
         }
+    } catch (error) {
+        console.error('❌ Music setup failed; the Discord bot will remain online:', error);
+    }
 
+    try {
         await voiceVerification.execute(client);
     } catch (error) {
-        console.error('❌ Voice verification failed:', error);
+        console.error('❌ Voice verification setup failed; the Discord bot will remain online:', error);
     }
 });
 
@@ -503,9 +532,10 @@ process.on('uncaughtException', error => {
 });
 
 try {
-    await registerCommands();
+    // Authenticate with Discord first. Registration/configuration errors are handled
+    // separately inside the ready listener and will not mark the bot offline.
     await client.login(token);
 } catch (error) {
-    console.error('❌ Failed to start KaXro:', error);
+    console.error('❌ Discord login failed. Check DISCORD_TOKEN and the Discord Developer Portal:', error);
     process.exit(1);
 }
